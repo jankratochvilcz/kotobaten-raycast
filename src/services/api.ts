@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { removeToken } from "./authentication";
 
 const PATH_ROOT = "https://kotobaten-api.fly.dev/";
 
@@ -17,22 +18,24 @@ export const login = async (email: string, password: string): Promise<string | u
     "Content-Type": "application/x-www-form-urlencoded",
   };
 
-  try {
-    const response = await axios.post(url.href, inputData.toString(), {
-      headers,
-    });
+  const response = await axios.post(url.href, inputData.toString(), {
+    headers,
+  });
 
-    if (response.status === 200) {
-      return response.data.access_token as string;
-    }
-
-    return undefined;
-  } catch (error) {
-    console.log(error);
+  if (response.status === 200) {
+    return response.data.access_token as string;
   }
+
+  return undefined;
 };
 
-export const addWord = async (sense: string, kanji: string | undefined, kana: string | undefined, note: string | undefined, token: string) => {
+export const addWord = async (
+  sense: string,
+  kanji: string | undefined,
+  kana: string | undefined,
+  note: string | undefined,
+  token: string
+) => {
   const url = new URL(PATH_ADD_CARD, PATH_ROOT);
 
   const payload = {
@@ -44,15 +47,24 @@ export const addWord = async (sense: string, kanji: string | undefined, kana: st
     type: "Word",
   };
 
-  const response = await axios.post(url.href, payload, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  try {
+    const response = await axios.post(url.href, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  if (response.status === 200) {
-    return true;
+    if (response.status === 200) {
+      return true;
+    }
+
+    return false;
+  } catch (error: unknown) {
+    if ((error as AxiosError).response?.status === 401) {
+      await removeToken();
+      // TODO: Refresh token flow
+    }
+
+    return false;
   }
-
-  return false;
 };

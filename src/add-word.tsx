@@ -1,10 +1,9 @@
-import { ActionPanel, Action, Form, showToast, useNavigation, showHUD } from "@raycast/api";
+import { ActionPanel, Action, Form, showToast, useNavigation, showHUD, popToRoot, Toast } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { validateRequired } from "./services/validation";
 import { getToken, isAuthenticated } from "./services/authentication";
 import Authenticate from "./authenticate";
 import { addWord } from "./services/api";
-import { usePromise } from "@raycast/utils";
 
 export default function Command() {
   const navigation = useNavigation();
@@ -13,9 +12,9 @@ export default function Command() {
   const [kana, setKana] = useState("");
   const [kanji, setKanji] = useState("");
   const [note, setNote] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [senseError, setSenseError] = useState<string | undefined>();
-  const [kanaError, setKanaError] = useState<string | undefined>();
   const [kanjiError, setKanjiError] = useState<string | undefined>();
 
   const onChangeSense = (newValue: string) => {
@@ -24,14 +23,12 @@ export default function Command() {
   };
 
   const onChangeKana = (newValue: string) => {
-    setKanaError(validateRequired(newValue, "Kana"));
-    setKanjiError(validateRequired(kanji, "Kanji"));
+    setKanjiError(validateRequired(`${newValue}${kana}`, "Kanji or kana"));
     setKana(newValue);
   };
 
   const onChangeKanji = (newValue: string) => {
-    setKanjiError(validateRequired(newValue, "Kanji"));
-    setKanaError(validateRequired(kana, "Kana"));
+    setKanjiError(validateRequired(`${newValue}${kana}`, "Kanji or kana"));
     setKanji(newValue);
   };
 
@@ -49,20 +46,23 @@ export default function Command() {
     redirectIfLoggedOut();
   });
 
-  const { isLoading, revalidate: onSubmit } = usePromise(
-    async () => {
-      const token = (await getToken())?.valueOf();
-      if (typeof token !== "string") {
-        navigation.push(<Authenticate />);
-      }
+  const onSubmit = async () => {
+    const token = (await getToken())?.valueOf();
+    if (typeof token !== "string") {
+      navigation.push(<Authenticate />);
+    }
 
-      if (senseError || kanaError || kanjiError) {
-        showToast({
-          title: "Please fix the errors and try submitting again.",
-        });
-        return;
-      }
+    if (senseError || kanjiError) {
+      showToast({
+        title: "Please fix the errors and try submitting again.",
+        style: Toast.Style.Failure,
+      });
+      return;
+    }
 
+    setIsLoading(true);
+
+    try {
       const result = await addWord(
         sense,
         kanji.length > 0 ? kanji : undefined,
@@ -74,17 +74,17 @@ export default function Command() {
       if (!result) {
         showToast({
           title: "Error adding word. Please try again.",
+          style: Toast.Style.Failure,
         });
         return false;
       }
 
+      popToRoot();
       showHUD("⛩️ Word added!");
-    },
-    [],
-    {
-      execute: false,
+    } finally {
+      setIsLoading(false);
     }
-  );
+  };
 
   return (
     <Form
@@ -115,7 +115,6 @@ export default function Command() {
         id="kana"
         title="Kana"
         placeholder="Enter the kana for the word."
-        error={kanaError}
         onChange={onChangeKana}
         onBlur={() => onChangeKana(kana)}
       />

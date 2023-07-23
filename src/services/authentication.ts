@@ -22,4 +22,8 @@ export const getToken = async () => {
   return await LocalStorage.getItem(STORAGE_TOKEN_KEY);
 };
 
+export const removeToken = async () => {
+  return await LocalStorage.removeItem(STORAGE_TOKEN_KEY)
+}
+
 export const isAuthenticated = async () => !!(await getToken());

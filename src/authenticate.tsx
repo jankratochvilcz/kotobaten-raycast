@@ -8,7 +8,7 @@ export default function Authenticate() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const [emailError, setEmailError] = useState<string | undefined>();
   const [passwordError, setPasswordError] = useState<string | undefined>();
@@ -32,24 +32,22 @@ export default function Authenticate() {
       return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       const isAuthenticated = await authenticate(email, password);
 
-    if (!isAuthenticated) {
-      showToast({ title: "Email or password is not valid.", style: Toast.Style.Failure });
-      setEmail("");
-      return;
-    }
+      if (!isAuthenticated) {
+        showToast({ title: "Email or password is not valid.", style: Toast.Style.Failure });
+        setEmail("");
+        return;
+      }
 
-    navigation.pop();
-    } catch (error) {
+      navigation.pop();
+    } finally {
       setIsLoading(false);
     }
   };
-
-  console.log(isLoading)
 
   return (
     <Form
