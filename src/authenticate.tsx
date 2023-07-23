@@ -1,7 +1,7 @@
 import { ActionPanel, Action, Form, showToast, useNavigation, Icon, Toast } from "@raycast/api";
 import { useState } from "react";
-import { validateRequired } from "./validation";
-import { authenticate } from "./authentication";
+import { validateRequired } from "./services/validation";
+import { authenticate } from "./services/authentication";
 
 export default function Authenticate() {
   const navigation = useNavigation();

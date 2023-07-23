@@ -1,10 +1,10 @@
 import { ActionPanel, Action, Form, showToast, useNavigation, showHUD } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { validateRequired } from "./validation";
-import { getToken, isAuthenticated } from "./authentication";
+import { validateRequired } from "./services/validation";
+import { getToken, isAuthenticated } from "./services/authentication";
 import Authenticate from "./authenticate";
-import { addWord } from "./api";
-import {usePromise } from "@raycast/utils"
+import { addWord } from "./services/api";
+import { usePromise } from "@raycast/utils";
 
 export default function Command() {
   const navigation = useNavigation();
@@ -41,46 +41,50 @@ export default function Command() {
 
   useEffect(() => {
     const redirectIfLoggedOut = async () => {
-      if(!(await isAuthenticated())) {
+      if (!(await isAuthenticated())) {
         navigation.push(<Authenticate />);
       }
-    }
+    };
 
-    redirectIfLoggedOut()
-  })
-
-  const { isLoading, revalidate: onSubmit } = usePromise(async () => {
-    const token = (await getToken())?.valueOf();
-    if (typeof token !== "string") {
-      navigation.push(<Authenticate />);
-    }
-
-    if (senseError || kanaError || kanjiError) {
-      showToast({
-        title: "Please fix the errors and try submitting again.",
-      });
-      return;
-    }
-
-    const result = await addWord(
-      sense,
-      kanji.length > 0 ? kanji : undefined,
-      kana.length > 0 ? kana : undefined,
-      note,
-      token as string
-    );
-
-    if (!result) {
-      showToast({
-        title: "Error adding word. Please try again.",
-      });
-      return false;
-    }
-
-    showHUD("⛩️ Word added!");
-  }, [], {
-    execute: false
+    redirectIfLoggedOut();
   });
+
+  const { isLoading, revalidate: onSubmit } = usePromise(
+    async () => {
+      const token = (await getToken())?.valueOf();
+      if (typeof token !== "string") {
+        navigation.push(<Authenticate />);
+      }
+
+      if (senseError || kanaError || kanjiError) {
+        showToast({
+          title: "Please fix the errors and try submitting again.",
+        });
+        return;
+      }
+
+      const result = await addWord(
+        sense,
+        kanji.length > 0 ? kanji : undefined,
+        kana.length > 0 ? kana : undefined,
+        note,
+        token as string
+      );
+
+      if (!result) {
+        showToast({
+          title: "Error adding word. Please try again.",
+        });
+        return false;
+      }
+
+      showHUD("⛩️ Word added!");
+    },
+    [],
+    {
+      execute: false,
+    }
+  );
 
   return (
     <Form

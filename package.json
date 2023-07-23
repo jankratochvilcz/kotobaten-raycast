@@ -8,7 +8,7 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "index",
+      "name": "add-word",
       "title": "Add Word",
       "subtitle": "Quickly add a word card to Kotobaten",
       "description": "",
