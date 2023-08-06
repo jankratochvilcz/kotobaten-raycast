@@ -10,15 +10,23 @@
     {
       "name": "add-word",
       "title": "Add Word",
-      "subtitle": "Quickly add a word card to Kotobaten",
+      "subtitle": "Quickly add a word to Kotobaten.",
       "description": "",
+      "mode": "view"
+    },
+    {
+      "name": "search",
+      "title": "Search Words",
+      "subtitle": "The words you learned at your fingertips.",
+      "description": "A full-text search of the data you have stored in Kotobaten.",
       "mode": "view"
     }
   ],
   "dependencies": {
     "@raycast/api": "^1.55.1",
     "@raycast/utils": "^1.8.0",
-    "axios": "^1.4.0"
+    "axios": "^1.4.0",
+    "ts-debounce": "^4.0.0"
   },
   "devDependencies": {
     "@raycast/eslint-config": "1.0.5",

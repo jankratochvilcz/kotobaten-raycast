@@ -1,11 +1,12 @@
 import { ActionPanel, Action, Form, showToast, useNavigation, showHUD, popToRoot, Toast } from "@raycast/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { validateRequired } from "./services/validation";
-import { getToken, isAuthenticated } from "./services/authentication";
+import { getToken } from "./services/authentication";
 import Authenticate from "./authenticate";
 import { addWord } from "./services/api";
+import useRedirectIfUnauthenticated from "./hooks/useRedirectIfLoggedOut";
 
-export default function Command() {
+export default function AddWord() {
   const navigation = useNavigation();
 
   const [sense, setSense] = useState("");
@@ -16,6 +17,8 @@ export default function Command() {
 
   const [senseError, setSenseError] = useState<string | undefined>();
   const [kanjiError, setKanjiError] = useState<string | undefined>();
+
+  useRedirectIfUnauthenticated()
 
   const onChangeSense = (newValue: string) => {
     setSenseError(validateRequired(newValue, "Sense"));
@@ -35,16 +38,6 @@ export default function Command() {
   const onChangeNote = (newValue: string) => {
     setNote(newValue);
   };
-
-  useEffect(() => {
-    const redirectIfLoggedOut = async () => {
-      if (!(await isAuthenticated())) {
-        navigation.push(<Authenticate />);
-      }
-    };
-
-    redirectIfLoggedOut();
-  });
 
   const onSubmit = async () => {
     const token = (await getToken())?.valueOf();

@@ -1,10 +1,26 @@
 import axios, { AxiosError } from "axios";
 import { removeToken } from "./authentication";
+import { SearchResult } from "../types/search-result";
 
 const PATH_ROOT = "https://kotobaten-api.fly.dev/";
 
 const PATH_LOGIN = "auth/login";
 const PATH_ADD_CARD = "cards";
+const PATH_SEARCH = "search";
+
+function createAuthenticationHeaders(token: string) {
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+}
+
+async function logoutIfNeeded(requestError: unknown) {
+  if ((requestError as AxiosError).response?.status === 401) {
+    await removeToken();
+  }
+}
 
 export const login = async (email: string, password: string): Promise<string | undefined> => {
   const url = new URL(PATH_LOGIN, PATH_ROOT);
@@ -48,11 +64,7 @@ export const addWord = async (
   };
 
   try {
-    const response = await axios.post(url.href, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.post(url.href, payload, createAuthenticationHeaders(token));
 
     if (response.status === 200) {
       return true;
@@ -60,11 +72,27 @@ export const addWord = async (
 
     return false;
   } catch (error: unknown) {
-    if ((error as AxiosError).response?.status === 401) {
-      await removeToken();
-      // TODO: Refresh token flow
-    }
+    await logoutIfNeeded(error);
 
     return false;
+  }
+};
+
+export const search = async (term: string, token: string): Promise<{ term: string; cards: SearchResult[] }> => {
+  const url = new URL(PATH_SEARCH, PATH_ROOT);
+  url.searchParams.append("term", term);
+
+  try {
+    const response = await axios.get(url.href, createAuthenticationHeaders(token));
+
+    if (response.status === 200) {
+      return { term, cards: response.data?.cards ?? ([] as SearchResult[]) };
+    }
+
+    return { term, cards: [] };
+  } catch (error: unknown) {
+    await logoutIfNeeded(error);
+
+    return { term, cards: [] };
   }
 };
