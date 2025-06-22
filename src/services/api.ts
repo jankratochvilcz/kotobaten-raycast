@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { removeToken } from "./authentication";
 import { SearchResult } from "../types/search-result";
 
-const PATH_ROOT = "https://kotobaten-api.fly.dev/";
+const PATH_ROOT = "https://kotoprdapiapp.salmonsmoke-5b2676a9.northeurope.azurecontainerapps.io/";
 
 const PATH_LOGIN = "auth/login";
 const PATH_ADD_CARD = "cards";
@@ -78,21 +78,22 @@ export const addWord = async (
   }
 };
 
-export const search = async (term: string, token: string): Promise<{ term: string; cards: SearchResult[] }> => {
+export const search = async (term: string, token: string): Promise<{ term: string; result?: SearchResult }> => {
   const url = new URL(PATH_SEARCH, PATH_ROOT);
   url.searchParams.append("term", term);
 
   try {
     const response = await axios.get(url.href, createAuthenticationHeaders(token));
+    console.log("Search response:", response.data);
 
     if (response.status === 200) {
-      return { term, cards: response.data?.cards ?? ([] as SearchResult[]) };
+      return {term, result: response.data as SearchResult};
     }
 
-    return { term, cards: [] };
+    return { term };
   } catch (error: unknown) {
     await logoutIfNeeded(error);
 
-    return { term, cards: [] };
+    return { term };
   }
 };

@@ -1,7 +1,8 @@
+import { DictionaryCard } from "./dictionary-card";
+import { StackCard } from "./stack-card";
+
 export type SearchResult = {
-    id: number
-    sense: string
-    kana: string
-    kanji: string
-    note: string
-}
+  query: string;
+  cards: StackCard[];
+  dictionaryCards: DictionaryCard[];
+};
