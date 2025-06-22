@@ -110,7 +110,6 @@ export const resetStackCardProgress = async (cardId: number, token: string): Pro
   console.log(url.href);
   try {
     const response = await axios.post(url.href, undefined, createAuthenticationHeaders(token));
-    console.log("Reset response:", response);
     return response.status === 200;
   } catch (error: unknown) {
     await logoutIfNeeded(error);
