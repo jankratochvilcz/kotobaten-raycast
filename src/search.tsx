@@ -102,7 +102,7 @@ export default function Search() {
               actions={
                 <ActionPanel>
                   <Action
-                    title="Reset progress"
+                    title="Reset Progress"
                     onAction={async () => {
                       const token = await requireToken();
                       if (!token) {
@@ -156,7 +156,7 @@ export default function Search() {
                 actions={
                   <ActionPanel>
                     <Action.Push
-                      title="Add to collection"
+                      title="Add to Collection"
                       target={<AddWord
                         sense={firstSense || ""}
                         kanji={result.kanji}
