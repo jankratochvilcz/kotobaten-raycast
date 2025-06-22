@@ -78,16 +78,23 @@ export const addWord = async (
   }
 };
 
-export const search = async (term: string, token: string): Promise<{ term: string; result?: SearchResult }> => {
+export const search = async (
+  term: string,
+  token: string,
+  abort?: AbortSignal
+): Promise<{ term: string; result?: SearchResult }> => {
   const url = new URL(PATH_SEARCH, PATH_ROOT);
   url.searchParams.append("term", term);
 
   try {
-    const response = await axios.get(url.href, createAuthenticationHeaders(token));
+    const response = await axios.get(url.href, {
+      ...createAuthenticationHeaders(token),
+      signal: abort,
+    });
     console.log("Search response:", response.data);
 
     if (response.status === 200) {
-      return {term, result: response.data as SearchResult};
+      return { term, result: response.data as SearchResult };
     }
 
     return { term };

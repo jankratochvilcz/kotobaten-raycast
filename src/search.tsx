@@ -1,13 +1,10 @@
 import { List, useNavigation } from "@raycast/api";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import useRedirectIfUnauthenticated from "./hooks/useRedirectIfLoggedOut";
 import { search } from "./services/api";
 import { getToken } from "./services/authentication";
 import Authenticate from "./authenticate";
-import { StackCard } from "./types/stack-card";
-import { DictionaryCard } from "./types/dictionary-card";
 import { SearchResult } from "./types/search-result";
-import { all } from "axios";
 
 // Define the result type for the search state
 interface SearchResults {
@@ -22,11 +19,19 @@ export default function Search() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [results, setResults] = useState<SearchResults>({ ...EMPTY_RESULTS });
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useRedirectIfUnauthenticated();
 
   const onSearchTextChange = async (newSearchText: string) => {
     setSearchText(newSearchText);
+
+    // Cancel previous search
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
 
     if (newSearchText.length < 1) {
       setResults({ ...EMPTY_RESULTS });
@@ -42,12 +47,18 @@ export default function Search() {
     }
 
     try {
-      const apiResult = await search(newSearchText, token);
+      const apiResult = await search(newSearchText, token, abortController.signal);
       const result: SearchResult | undefined = apiResult.result;
       setResults({
         term: newSearchText,
         result
       });
+    } catch (e: any) {
+      if (e.name === "AbortError") {
+        // Ignore aborted requests
+        return;
+      }
+      throw e;
     } finally {
       setIsLoading(false);
     }
@@ -111,6 +122,11 @@ export default function Search() {
                         )}
                         {result.kanji && <List.Item.Detail.Metadata.Label title="Kanji" text={result.kanji} />}
                         {result.kana && <List.Item.Detail.Metadata.Label title="Kana" text={result.kana} />}
+                        {result.isCommon && (
+                          <List.Item.Detail.Metadata.TagList title="Tags">
+                            <List.Item.Detail.Metadata.TagList.Item text="Common word" color="#22c55e" />
+                          </List.Item.Detail.Metadata.TagList>
+                        )}
                       </List.Item.Detail.Metadata>
                     }
                   />
