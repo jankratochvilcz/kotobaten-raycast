@@ -27,3 +27,8 @@ export const removeToken = async () => {
 }
 
 export const isAuthenticated = async () => !!(await getToken());
+
+export const requireToken = async (): Promise<string | undefined> => {
+  const token = (await getToken())?.valueOf();
+  return typeof token === "string" ? token : undefined;
+};

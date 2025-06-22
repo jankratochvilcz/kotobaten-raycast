@@ -1,18 +1,25 @@
 import { ActionPanel, Action, Form, showToast, useNavigation, showHUD, popToRoot, Toast } from "@raycast/api";
 import { useState } from "react";
 import { validateRequired } from "./services/validation";
-import { getToken } from "./services/authentication";
+import { requireToken } from "./services/authentication";
 import Authenticate from "./authenticate";
 import { addWord } from "./services/api";
 import useRedirectIfUnauthenticated from "./hooks/useRedirectIfLoggedOut";
 
-export default function AddWord() {
+type AddWordProps = {
+  sense?: string;
+  kanji?: string;
+  kana?: string;
+  note?: string;
+}
+
+export default function AddWord({ sense: initialSense = "", kanji: initialKanji = "", kana: initialKana = "", note: initialNote = "" }: AddWordProps) {
   const navigation = useNavigation();
 
-  const [sense, setSense] = useState("");
-  const [kana, setKana] = useState("");
-  const [kanji, setKanji] = useState("");
-  const [note, setNote] = useState("");
+  const [sense, setSense] = useState(initialSense);
+  const [kana, setKana] = useState(initialKana);
+  const [kanji, setKanji] = useState(initialKanji);
+  const [note, setNote] = useState(initialNote);
   const [isLoading, setIsLoading] = useState(false);
 
   const [senseError, setSenseError] = useState<string | undefined>();
@@ -40,9 +47,10 @@ export default function AddWord() {
   };
 
   const onSubmit = async () => {
-    const token = (await getToken())?.valueOf();
-    if (typeof token !== "string") {
+    const token = await requireToken();
+    if (!token) {
       navigation.push(<Authenticate />);
+      return;
     }
 
     if (senseError || kanjiError) {
@@ -93,6 +101,7 @@ export default function AddWord() {
         title="Sense"
         placeholder="Enter the meaning in English or another language."
         error={senseError}
+        value={sense}
         onChange={onChangeSense}
         onBlur={() => onChangeSense(sense)}
       />
@@ -101,6 +110,7 @@ export default function AddWord() {
         title="Kanji"
         placeholder="Enter the kanji for the word."
         error={kanjiError}
+        value={kanji}
         onChange={onChangeKanji}
         onBlur={() => onChangeKanji(kanji)}
       />
@@ -108,6 +118,7 @@ export default function AddWord() {
         id="kana"
         title="Kana"
         placeholder="Enter the kana for the word."
+        value={kana}
         onChange={onChangeKana}
         onBlur={() => onChangeKana(kana)}
       />
@@ -115,6 +126,7 @@ export default function AddWord() {
         id="note"
         title="Note"
         placeholder="Jot down anything else relevant about the word."
+        value={note}
         onChange={onChangeNote}
         onBlur={() => onChangeKana(kana)}
       />

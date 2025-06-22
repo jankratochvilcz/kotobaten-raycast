@@ -56,8 +56,8 @@ export const addWord = async (
 
   const payload = {
     sense: sense,
-    kana: kanji,
-    kanji: kana,
+    kana: kana,
+    kanji: kanji,
     note: note,
     created: new Date().toISOString(),
     type: "Word",
@@ -91,7 +91,6 @@ export const search = async (
       ...createAuthenticationHeaders(token),
       signal: abort,
     });
-    console.log("Search response:", response.data);
 
     if (response.status === 200) {
       return { term, result: response.data as SearchResult };
@@ -102,5 +101,19 @@ export const search = async (
     await logoutIfNeeded(error);
 
     return { term };
+  }
+};
+
+export const resetStackCardProgress = async (cardId: number, token: string): Promise<boolean> => {
+  const url = new URL("cardsreset", PATH_ROOT);
+  url.searchParams.append("cardId", cardId.toString());
+  console.log(url.href);
+  try {
+    const response = await axios.post(url.href, undefined, createAuthenticationHeaders(token));
+    console.log("Reset response:", response);
+    return response.status === 200;
+  } catch (error: unknown) {
+    await logoutIfNeeded(error);
+    return false;
   }
 };

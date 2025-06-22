@@ -1,7 +1,7 @@
 import { StackCardType } from "./stack-card-type";
 
 export type StackCard = {
-  // CardDefinition
+  id: number;
   created: string; // ISO date string
   sense: string;
   kana: string;

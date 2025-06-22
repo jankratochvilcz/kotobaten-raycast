@@ -1,10 +1,12 @@
-import { List, useNavigation } from "@raycast/api";
+import { List, useNavigation, ActionPanel, Action } from "@raycast/api";
 import { useState, useRef } from "react";
 import useRedirectIfUnauthenticated from "./hooks/useRedirectIfLoggedOut";
-import { search } from "./services/api";
-import { getToken } from "./services/authentication";
+import { search, resetStackCardProgress } from "./services/api";
+import { requireToken } from "./services/authentication";
 import Authenticate from "./authenticate";
 import { SearchResult } from "./types/search-result";
+import AddWord from "./add-word";
+import { showToast, Toast } from "@raycast/api";
 
 // Define the result type for the search state
 interface SearchResults {
@@ -40,8 +42,8 @@ export default function Search() {
 
     setIsLoading(true);
 
-    const token = (await getToken())?.valueOf();
-    if (typeof token !== "string") {
+    const token = await requireToken();
+    if (!token) {
       navigation.push(<Authenticate />);
       return;
     }
@@ -97,6 +99,26 @@ export default function Search() {
                   }
                 />
               }
+              actions={
+                <ActionPanel>
+                  <Action
+                    title="Reset progress"
+                    onAction={async () => {
+                      const token = await requireToken();
+                      if (!token) {
+                        navigation.push(<Authenticate />);
+                        return;
+                      }
+                      const ok = await resetStackCardProgress(card.id, token);
+                      if (ok) {
+                        showToast({ style: Toast.Style.Success, title: "Progress reset!" });
+                      } else {
+                        showToast({ style: Toast.Style.Failure, title: "Failed to reset progress" });
+                      }
+                    }}
+                  />
+                </ActionPanel>
+              }
             />
           ))}
         </List.Section>
@@ -130,6 +152,19 @@ export default function Search() {
                       </List.Item.Detail.Metadata>
                     }
                   />
+                }
+                actions={
+                  <ActionPanel>
+                    <Action.Push
+                      title="Add to collection"
+                      target={<AddWord
+                        sense={firstSense || ""}
+                        kanji={result.kanji}
+                        kana={result.kana}
+                        note={undefined}
+                      />}
+                    />
+                  </ActionPanel>
                 }
               />
             );
