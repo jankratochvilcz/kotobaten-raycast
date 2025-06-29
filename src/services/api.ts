@@ -107,7 +107,7 @@ export const search = async (
 export const resetStackCardProgress = async (cardId: number, token: string): Promise<boolean> => {
   const url = new URL("cardsreset", PATH_ROOT);
   url.searchParams.append("cardId", cardId.toString());
-  console.log(url.href);
+
   try {
     const response = await axios.post(url.href, undefined, createAuthenticationHeaders(token));
     return response.status === 200;

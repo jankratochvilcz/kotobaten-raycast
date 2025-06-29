@@ -144,6 +144,11 @@ export default function Search() {
                         )}
                         {result.kanji && <List.Item.Detail.Metadata.Label title="Kanji" text={result.kanji} />}
                         {result.kana && <List.Item.Detail.Metadata.Label title="Kana" text={result.kana} />}
+                        {firstSense && <List.Item.Detail.Metadata.TagList title="Parts of Speech">
+                          {result.senses[0].partsOfSpeech.map((partOfSpeech, i) => (
+                            <List.Item.Detail.Metadata.TagList.Item key={partOfSpeech + i} text={partOfSpeech} color="#6366f1" />
+                          ))}
+                        </List.Item.Detail.Metadata.TagList>}
                         {result.isCommon && (
                           <List.Item.Detail.Metadata.TagList title="Tags">
                             <List.Item.Detail.Metadata.TagList.Item text="Common word" color="#22c55e" />
