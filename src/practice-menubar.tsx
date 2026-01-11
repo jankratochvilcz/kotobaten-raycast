@@ -1,6 +1,5 @@
 import { MenuBarExtra, Icon, open } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { getPracticeWords } from "./services/api";
 import { requireToken } from "./services/authentication";
 import {
   DisplayWord,
@@ -13,37 +12,11 @@ import {
   isCacheValid,
 } from "./services/storage";
 import { formatDisplayWordAsOneLine } from "./services/formatting";
-import { Impression } from "./types/practice-impression";
+import { fetchAndProcessPracticeWords } from "./services/practice";
 
 const ROTATION_INTERVAL_MS = 60000; // 1 minute
 const PRACTICE_FETCH_COUNT = 60;
 const CACHE_DURATION_MS = 3600000; // 1 hour
-
-function extractDisplayWord(impression: Impression): DisplayWord | undefined {
-  switch (impression.type) {
-    case "SenseGuess":
-    case "KanaGuess":
-      return {
-        sense: impression.card.sense,
-        kanji: impression.card.kanji || undefined,
-        kana: impression.card.kana || undefined,
-      };
-    case "GeneratedSentenceGuess":
-      return {
-        sense: impression.sense,
-        kanji: impression.withKanji,
-        kana: impression.kanaOnly,
-      };
-    case "GeneratedSentenceWithParticlesSelect":
-      return {
-        sense: impression.sense,
-        kanji: impression.options[impression.correctOption]?.withKanji,
-        kana: impression.options[impression.correctOption]?.kanaOnly,
-      };
-    default:
-      return undefined;
-  }
-}
 
 export default function PracticeMenuBar() {
   const [words, setWords] = useState<DisplayWord[]>([]);
@@ -89,13 +62,9 @@ export default function PracticeMenuBar() {
           return;
         }
 
-        const response = await getPracticeWords(PRACTICE_FETCH_COUNT, token);
+        const displayWords = await fetchAndProcessPracticeWords(PRACTICE_FETCH_COUNT, token);
 
-        if (response && response.impressions.length > 0) {
-          const displayWords = response.impressions
-            .map((impression) => extractDisplayWord(impression))
-            .filter((word): word is DisplayWord => word !== undefined);
-
+        if (displayWords.length > 0) {
           setWords(displayWords);
           setCurrentIndex(0);
 
