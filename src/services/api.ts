@@ -1,12 +1,14 @@
 import axios, { AxiosError } from "axios";
 import { removeToken } from "./authentication";
 import { SearchResult } from "../types/search-result";
+import { PracticeResponse } from "../types/practice-impression";
 
 const PATH_ROOT = "https://kotoprdapiapp.salmonsmoke-5b2676a9.northeurope.azurecontainerapps.io/";
 
 const PATH_LOGIN = "auth/login";
 const PATH_ADD_CARD = "cards";
 const PATH_SEARCH = "search";
+const PATH_PRACTICE = "practice";
 
 function createAuthenticationHeaders(token: string) {
   return {
@@ -114,5 +116,23 @@ export const resetStackCardProgress = async (cardId: number, token: string): Pro
   } catch (error: unknown) {
     await logoutIfNeeded(error);
     return false;
+  }
+};
+
+export const getPracticeWords = async (count: number, token: string): Promise<PracticeResponse | undefined> => {
+  const url = new URL(PATH_PRACTICE, PATH_ROOT);
+  url.searchParams.append("count", count.toString());
+
+  try {
+    const response = await axios.get(url.href, createAuthenticationHeaders(token));
+
+    if (response.status === 200) {
+      return response.data as PracticeResponse;
+    }
+
+    return undefined;
+  } catch (error: unknown) {
+    await logoutIfNeeded(error);
+    return undefined;
   }
 };

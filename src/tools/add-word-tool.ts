@@ -10,18 +10,6 @@ type Input = {
 };
 
 export default async function addWordTool({ sense, kana, kanji, note }: Input) {
-  const confirmed = await confirmAlert({
-    title: "Add this word?",
-    message: `Are you sure you want to add:\nSense: ${sense}\nKanji: ${kanji || "-"}\nKana: ${kana || "-"}\nNote: ${note || "-"}`,
-    primaryAction: {
-      title: "Add Word",
-    },
-  });
-  if (!confirmed) {
-    await showToast({ style: Toast.Style.Failure, title: "Cancelled" });
-    return null;
-  }
-
   const token = await requireToken();
   if (!token) {
     await showToast({ style: Toast.Style.Failure, title: "Not authenticated" });

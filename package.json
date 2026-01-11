@@ -20,6 +20,27 @@
       "subtitle": "The words you learned at your fingertips.",
       "description": "A full-text search of the data you have stored in Kotobaten.",
       "mode": "view"
+    },
+    {
+      "name": "practice-menubar",
+      "title": "Practice Menu Bar",
+      "subtitle": "Rotating vocabulary practice in your menu bar.",
+      "description": "Displays a rotating Japanese vocabulary word in the menu bar, changing every minute. Shows sense, kanji, and kana readings.",
+      "mode": "menu-bar"
+    },
+    {
+      "name": "next-practice-word",
+      "title": "Next Practice Word (Menu Bar)",
+      "subtitle": "Navigate to the next practice word.",
+      "description": "Advances to the next word in your practice vocabulary list.",
+      "mode": "no-view"
+    },
+    {
+      "name": "previous-practice-word",
+      "title": "Previous Practice Word (Menu Bar)",
+      "subtitle": "Navigate to the previous practice word.",
+      "description": "Goes back to the previous word in your practice vocabulary list.",
+      "mode": "no-view"
     }
   ],
   "tools": [

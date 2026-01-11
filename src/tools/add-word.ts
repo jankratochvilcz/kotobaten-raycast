@@ -27,12 +27,6 @@ type Input = {
   note: string | undefined,
 };
 
-export const confirmation: Tool.Confirmation<Input> = async (input) => {
-  return {
-    message: `Are you sure you want to add a new word to your collection? ${input.sense}: ${input.kanji} - ${input.kana} (note: ${input.note || "-"})`,
-  };
-};
-
 export default async function addWordTool({ sense, kana, kanji, note }: Input) {
 
   const token = await requireToken();
