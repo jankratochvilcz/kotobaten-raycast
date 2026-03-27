@@ -61,6 +61,13 @@
       "mode": "no-view"
     },
     {
+      "name": "refresh-practice-words",
+      "title": "Refresh Practice Words",
+      "subtitle": "Fetch a new set of practice words.",
+      "description": "Manually fetches a new practice session from the Kotobaten API, replacing the current word list.",
+      "mode": "no-view"
+    },
+    {
       "name": "mark-not-retained",
       "title": "Mark Word as Not Retained",
       "subtitle": "I need to practice this word more.",
