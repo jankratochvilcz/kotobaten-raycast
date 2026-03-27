@@ -1,6 +1,7 @@
 import { launchCommand, LaunchType, showHUD } from "@raycast/api";
 import { getPracticeWordsCache, setCurrentWordIndex, setRotationBase } from "./services/storage";
-import { formatDisplayWordAsOneLine } from "./services/formatting";
+import { requireToken } from "./services/authentication";
+import { submitImpression } from "./services/api";
 
 export default async function Command() {
   try {
@@ -12,13 +13,18 @@ export default async function Command() {
     }
 
     const { words, index: currentIndex } = cache;
-    const previousIndex = (currentIndex - 1 + words.length) % words.length;
+    const word = words[currentIndex];
 
-    await setCurrentWordIndex(previousIndex);
-    await setRotationBase(previousIndex, Date.now());
+    const token = await requireToken();
+    if (token) {
+      await submitImpression(word.stackCardId, word.impressionType, true, token);
+    }
 
-    const previousWord = words[previousIndex];
-    await showHUD(`${previousIndex + 1}/${words.length}: ${formatDisplayWordAsOneLine(previousWord)}`);
+    const nextIndex = (currentIndex + 1) % words.length;
+    await setCurrentWordIndex(nextIndex);
+    await setRotationBase(nextIndex, Date.now());
+
+    await showHUD("Retained!");
 
     try {
       await launchCommand({ name: "practice-menubar", type: LaunchType.Background });
@@ -26,7 +32,7 @@ export default async function Command() {
       // Menu bar may not be active
     }
   } catch (error) {
-    await showHUD("Failed to navigate to previous word");
-    console.error("Error in previous-practice-word:", error);
+    await showHUD("Failed to mark word as retained");
+    console.error("Error in mark-retained:", error);
   }
 }

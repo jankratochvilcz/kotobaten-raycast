@@ -15,6 +15,7 @@ import {
 } from "./services/storage";
 import { formatDisplayWordAsOneLine } from "./services/formatting";
 import { fetchAndProcessPracticeWords } from "./services/practice";
+import { submitImpression } from "./services/api";
 
 const PRACTICE_FETCH_COUNT = 60;
 const CACHE_DURATION_MS = 3600000; // 1 hour
@@ -154,6 +155,25 @@ export default function PracticeMenuBar() {
     }
   };
 
+  // Submit practice result and advance to next word
+  const markWord = async (success: boolean) => {
+    if (words.length === 0) return;
+
+    const word = words[currentIndex];
+
+    // Advance to next word first — the menu closes immediately on click,
+    // so storage must be updated before the slower API call.
+    const newIndex = (currentIndex + 1) % words.length;
+    setCurrentIndex(newIndex);
+    await setCurrentWordIndex(newIndex);
+    await setRotationBase(newIndex, Date.now());
+
+    const token = await requireToken();
+    if (token) {
+      await submitImpression(word.stackCardId, word.impressionType, success, token);
+    }
+  };
+
   // Get display text
   const getTitle = () => {
     if (isLoading) {
@@ -201,6 +221,20 @@ export default function PracticeMenuBar() {
             title="Next Word"
             icon={Icon.ArrowRight}
             onAction={nextWord}
+          />
+
+          <MenuBarExtra.Separator />
+
+          <MenuBarExtra.Item
+            title="I know this one!"
+            icon={Icon.CheckCircle}
+            onAction={() => markWord(true)}
+          />
+
+          <MenuBarExtra.Item
+            title="Needs more practice."
+            icon={Icon.XMarkCircle}
+            onAction={() => markWord(false)}
           />
 
           <MenuBarExtra.Separator />

@@ -52,6 +52,20 @@
       "subtitle": "Navigate to the previous practice word.",
       "description": "Goes back to the previous word in your practice vocabulary list.",
       "mode": "no-view"
+    },
+    {
+      "name": "mark-retained",
+      "title": "Mark Word as Retained",
+      "subtitle": "I know this word.",
+      "description": "Marks the current practice word as retained/known and advances to the next word.",
+      "mode": "no-view"
+    },
+    {
+      "name": "mark-not-retained",
+      "title": "Mark Word as Not Retained",
+      "subtitle": "I need to practice this word more.",
+      "description": "Marks the current practice word as not retained and advances to the next word.",
+      "mode": "no-view"
     }
   ],
   "tools": [

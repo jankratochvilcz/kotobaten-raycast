@@ -1,4 +1,4 @@
-import { showHUD } from "@raycast/api";
+import { launchCommand, LaunchType, showHUD } from "@raycast/api";
 import { getPracticeWordsCache, setCurrentWordIndex, setRotationBase } from "./services/storage";
 import { formatDisplayWordAsOneLine } from "./services/formatting";
 
@@ -19,6 +19,12 @@ export default async function Command() {
 
     const nextWord = words[nextIndex];
     await showHUD(`${nextIndex + 1}/${words.length}: ${formatDisplayWordAsOneLine(nextWord)}`);
+
+    try {
+      await launchCommand({ name: "practice-menubar", type: LaunchType.Background });
+    } catch {
+      // Menu bar may not be active
+    }
   } catch (error) {
     await showHUD("Failed to navigate to next word");
     console.error("Error in next-practice-word:", error);

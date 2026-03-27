@@ -9,6 +9,7 @@ const PATH_LOGIN = "auth/login";
 const PATH_ADD_CARD = "cards";
 const PATH_SEARCH = "search";
 const PATH_PRACTICE = "practice";
+const PATH_IMPRESSIONS = "impressions";
 
 function createAuthenticationHeaders(token: string) {
   return {
@@ -134,5 +135,28 @@ export const getPracticeWords = async (count: number, token: string): Promise<Pr
   } catch (error: unknown) {
     await logoutIfNeeded(error);
     return undefined;
+  }
+};
+
+export const submitImpression = async (
+  cardId: number | undefined,
+  impressionType: number,
+  success: boolean,
+  token: string,
+): Promise<boolean> => {
+  const url = new URL(PATH_IMPRESSIONS, PATH_ROOT);
+
+  try {
+    const response = await axios.post(
+      url.href,
+      { cardId: cardId ?? null, impressionType, success },
+      createAuthenticationHeaders(token),
+    );
+    console.log(`submitImpression response: status=${response.status}`, JSON.stringify(response.data));
+    return response.status === 200 || response.status === 202;
+  } catch (error: unknown) {
+    console.error("submitImpression error:", error);
+    await logoutIfNeeded(error);
+    return false;
   }
 };

@@ -11,6 +11,8 @@ export interface DisplayWord {
   sense: string;
   kanji?: string;
   kana?: string;
+  stackCardId?: number;
+  impressionType: number;
 }
 
 export interface PracticeWordsCache {
