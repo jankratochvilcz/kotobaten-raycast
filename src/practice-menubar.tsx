@@ -45,10 +45,10 @@ export default function PracticeMenuBar() {
   // Load and fetch practice words, then compute current rotated index
   useEffect(() => {
     async function loadWords() {
-      setIsLoading(true);
       setError(undefined);
 
       try {
+        // Try cache first — avoid loading state to prevent title jitter on re-mount
         const cache = await getPracticeWordsCache();
         const isValid = await isCacheValid(CACHE_DURATION_MS);
 
@@ -57,7 +57,8 @@ export default function PracticeMenuBar() {
         if (cache && isValid) {
           loadedWords = cache.words;
         } else {
-          // Cache is invalid or missing, fetch from API
+          // Only show loading spinner when we need to fetch from API
+          setIsLoading(true);
           const token = await requireToken();
 
           if (!token) {
@@ -110,27 +111,10 @@ export default function PracticeMenuBar() {
     loadWords();
   }, []);
 
-  // In-process rotation timer — advances the word while the process is alive.
-  // If the process is suspended by Raycast and later re-mounted (via the
-  // `interval: "1m"` background refresh), the effect above recalculates the
-  // correct index from the timestamp anchor, so no words are skipped.
-  useEffect(() => {
-    if (!isEnabled || words.length === 0) {
-      return;
-    }
-
-    const interval = setInterval(async () => {
-      const now = Date.now();
-      const base = await getRotationBase();
-      if (!base) return;
-
-      const idx = calculateRotatedIndex(base.baseIndex, base.baseTime, now, rotationIntervalMs, words.length);
-      setCurrentIndex(idx);
-      await setCurrentWordIndex(idx);
-    }, rotationIntervalMs);
-
-    return () => clearInterval(interval);
-  }, [isEnabled, words.length]);
+  // No in-process setInterval needed — Raycast's `interval: "1m"` re-mounts
+  // the component periodically, and the loadWords effect above recalculates
+  // the correct index from the timestamp anchor each time. Keeping a timer
+  // alive would cause Raycast's 54s execution timeout.
 
   // Toggle enabled state
   const toggleEnabled = async () => {
