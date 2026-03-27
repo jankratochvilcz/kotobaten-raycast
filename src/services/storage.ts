@@ -4,6 +4,8 @@ const STORAGE_KEY_ENABLED = "practice_menubar_enabled";
 const STORAGE_KEY_WORDS = "practice_menubar_words";
 const STORAGE_KEY_INDEX = "practice_menubar_index";
 const STORAGE_KEY_TIMESTAMP = "practice_menubar_timestamp";
+const STORAGE_KEY_ROTATION_BASE_INDEX = "practice_menubar_rotation_base_index";
+const STORAGE_KEY_ROTATION_BASE_TIME = "practice_menubar_rotation_base_time";
 
 export interface DisplayWord {
   sense: string;
@@ -75,4 +77,33 @@ export const getRotationEnabled = async (): Promise<boolean> => {
 
 export const setRotationEnabled = async (enabled: boolean): Promise<void> => {
   await LocalStorage.setItem(STORAGE_KEY_ENABLED, enabled.toString());
+};
+
+// Rotation base (anchor point for timestamp-based rotation)
+export const getRotationBase = async (): Promise<{ baseIndex: number; baseTime: number } | undefined> => {
+  const baseIndex = await LocalStorage.getItem<string>(STORAGE_KEY_ROTATION_BASE_INDEX);
+  const baseTime = await LocalStorage.getItem<string>(STORAGE_KEY_ROTATION_BASE_TIME);
+  if (baseIndex === undefined || baseTime === undefined) return undefined;
+  return { baseIndex: parseInt(baseIndex, 10), baseTime: parseInt(baseTime, 10) };
+};
+
+export const setRotationBase = async (baseIndex: number, baseTime: number): Promise<void> => {
+  await LocalStorage.setItem(STORAGE_KEY_ROTATION_BASE_INDEX, baseIndex.toString());
+  await LocalStorage.setItem(STORAGE_KEY_ROTATION_BASE_TIME, baseTime.toString());
+};
+
+/**
+ * Calculate the current rotation index based on a timestamp anchor.
+ * Even if the process was suspended, this derives the correct position from wall-clock time.
+ */
+export const calculateRotatedIndex = (
+  baseIndex: number,
+  baseTime: number,
+  now: number,
+  intervalMs: number,
+  totalWords: number,
+): number => {
+  const elapsed = Math.max(0, now - baseTime);
+  const steps = Math.floor(elapsed / intervalMs);
+  return (baseIndex + steps) % totalWords;
 };

@@ -26,7 +26,18 @@
       "title": "Practice Menu Bar",
       "subtitle": "Rotating vocabulary practice in your menu bar.",
       "description": "Displays a rotating Japanese vocabulary word in the menu bar, changing every minute. Shows sense, kanji, and kana readings.",
-      "mode": "menu-bar"
+      "mode": "menu-bar",
+      "interval": "1m",
+      "preferences": [
+        {
+          "name": "rotationIntervalSeconds",
+          "title": "Rotation Speed",
+          "description": "How often the word rotates, in seconds.",
+          "type": "textfield",
+          "default": "60",
+          "required": false
+        }
+      ]
     },
     {
       "name": "next-practice-word",

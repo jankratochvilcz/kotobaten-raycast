@@ -1,5 +1,5 @@
 import { showHUD } from "@raycast/api";
-import { getPracticeWordsCache, setCurrentWordIndex } from "./services/storage";
+import { getPracticeWordsCache, setCurrentWordIndex, setRotationBase } from "./services/storage";
 import { formatDisplayWordAsOneLine } from "./services/formatting";
 
 export default async function Command() {
@@ -15,6 +15,7 @@ export default async function Command() {
     const nextIndex = (currentIndex + 1) % words.length;
 
     await setCurrentWordIndex(nextIndex);
+    await setRotationBase(nextIndex, Date.now());
 
     const nextWord = words[nextIndex];
     await showHUD(`${nextIndex + 1}/${words.length}: ${formatDisplayWordAsOneLine(nextWord)}`);
