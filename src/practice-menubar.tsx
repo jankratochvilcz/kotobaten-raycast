@@ -176,7 +176,7 @@ export default function PracticeMenuBar() {
   };
 
   return (
-    <MenuBarExtra title={getTitle()} tooltip="Japanese Practice Words">
+    <MenuBarExtra title={getTitle()} isLoading={isLoading} tooltip="Japanese Practice Words">
       {!isLoading && !error && words.length > 0 && (
         <>
           <MenuBarExtra.Item
