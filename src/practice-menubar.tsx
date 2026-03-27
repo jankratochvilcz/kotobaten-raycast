@@ -94,10 +94,8 @@ export default function PracticeMenuBar() {
           setCurrentIndex(idx);
           await setCurrentWordIndex(idx);
         } else if (base) {
-          // Paused — show the anchored index
           setCurrentIndex(base.baseIndex);
         } else {
-          // No base yet (shouldn't happen after fresh fetch, but be safe)
           await setRotationBase(0, now);
           setCurrentIndex(0);
         }
@@ -112,24 +110,10 @@ export default function PracticeMenuBar() {
     loadWords();
   }, []);
 
-  // No in-process setInterval needed — Raycast's `interval: "1m"` re-mounts
-  // the component periodically, and the loadWords effect above recalculates
-  // the correct index from the timestamp anchor each time. Keeping a timer
-  // alive would cause Raycast's 54s execution timeout.
-
   // Toggle enabled state
   const toggleEnabled = async () => {
     const newState = !isEnabled;
-    const now = Date.now();
-
-    if (newState) {
-      // Resuming — set a new anchor at the current index so rotation continues from here
-      await setRotationBase(currentIndex, now);
-    } else {
-      // Pausing — anchor at the current index so we remember where we stopped
-      await setRotationBase(currentIndex, now);
-    }
-
+    await setRotationBase(currentIndex, Date.now());
     setIsEnabled(newState);
     await setRotationEnabled(newState);
   };
@@ -140,7 +124,6 @@ export default function PracticeMenuBar() {
       const newIndex = (currentIndex + 1) % words.length;
       setCurrentIndex(newIndex);
       await setCurrentWordIndex(newIndex);
-      // Reset the rotation anchor so the timer counts from this new position
       await setRotationBase(newIndex, Date.now());
     }
   };

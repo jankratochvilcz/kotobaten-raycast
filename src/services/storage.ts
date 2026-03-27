@@ -12,7 +12,7 @@ export interface DisplayWord {
   kanji?: string;
   kana?: string;
   stackCardId?: number;
-  impressionType: number;
+  impressionType: string;
 }
 
 export interface PracticeWordsCache {

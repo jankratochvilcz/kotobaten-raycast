@@ -23,7 +23,7 @@
     },
     {
       "name": "practice-menubar",
-      "title": "Practice Menu Bar",
+      "title": "Practice: Menu Bar",
       "subtitle": "Rotating vocabulary practice in your menu bar.",
       "description": "Displays a rotating Japanese vocabulary word in the menu bar, changing every minute. Shows sense, kanji, and kana readings.",
       "mode": "menu-bar",
@@ -41,37 +41,37 @@
     },
     {
       "name": "next-practice-word",
-      "title": "Next Practice Word (Menu Bar)",
+      "title": "Practice: Next Word",
       "subtitle": "Navigate to the next practice word.",
       "description": "Advances to the next word in your practice vocabulary list.",
       "mode": "no-view"
     },
     {
       "name": "previous-practice-word",
-      "title": "Previous Practice Word (Menu Bar)",
+      "title": "Practice: Previous Word",
       "subtitle": "Navigate to the previous practice word.",
       "description": "Goes back to the previous word in your practice vocabulary list.",
       "mode": "no-view"
     },
     {
       "name": "mark-retained",
-      "title": "Mark Word as Retained",
+      "title": "Practice: Mark as Retained",
       "subtitle": "I know this word.",
       "description": "Marks the current practice word as retained/known and advances to the next word.",
       "mode": "no-view"
     },
     {
-      "name": "refresh-practice-words",
-      "title": "Refresh Practice Words",
-      "subtitle": "Fetch a new set of practice words.",
-      "description": "Manually fetches a new practice session from the Kotobaten API, replacing the current word list.",
+      "name": "mark-not-retained",
+      "title": "Practice: Mark as Not Retained",
+      "subtitle": "I need to practice this word more.",
+      "description": "Marks the current practice word as not retained and advances to the next word.",
       "mode": "no-view"
     },
     {
-      "name": "mark-not-retained",
-      "title": "Mark Word as Not Retained",
-      "subtitle": "I need to practice this word more.",
-      "description": "Marks the current practice word as not retained and advances to the next word.",
+      "name": "refresh-practice-words",
+      "title": "Practice: Refresh Words",
+      "subtitle": "Fetch a new set of practice words.",
+      "description": "Manually fetches a new practice session from the Kotobaten API, replacing the current word list.",
       "mode": "no-view"
     }
   ],

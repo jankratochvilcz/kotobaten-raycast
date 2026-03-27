@@ -15,11 +15,6 @@ export default async function Command() {
     const { words, index: currentIndex } = cache;
     const word = words[currentIndex];
 
-    const token = await requireToken();
-    if (token) {
-      await submitImpression(word.stackCardId, word.impressionType, false, token);
-    }
-
     const nextIndex = (currentIndex + 1) % words.length;
     await setCurrentWordIndex(nextIndex);
     await setRotationBase(nextIndex, Date.now());
@@ -30,6 +25,11 @@ export default async function Command() {
       await launchCommand({ name: "practice-menubar", type: LaunchType.Background });
     } catch {
       // Menu bar may not be active
+    }
+
+    const token = await requireToken();
+    if (token) {
+      await submitImpression(word.stackCardId, word.impressionType, false, token);
     }
   } catch (error) {
     await showHUD("Failed to mark word");

@@ -46,8 +46,8 @@ describe("practice service", () => {
         sense: "house",
         kanji: "家",
         kana: "いえ",
-        stackCardId: undefined,
-        impressionType: 1,
+        stackCardId: 1,
+        impressionType: "SenseGuess",
       });
     });
 
@@ -69,8 +69,8 @@ describe("practice service", () => {
         sense: "cat",
         kanji: "猫",
         kana: "ねこ",
-        stackCardId: undefined,
-        impressionType: 2,
+        stackCardId: 2,
+        impressionType: "KanaGuess",
       });
     });
 
@@ -92,8 +92,8 @@ describe("practice service", () => {
         sense: "hello",
         kanji: undefined,
         kana: "こんにちは",
-        stackCardId: undefined,
-        impressionType: 1,
+        stackCardId: 3,
+        impressionType: "SenseGuess",
       });
     });
 
@@ -113,7 +113,7 @@ describe("practice service", () => {
         kanji: "私は学生です",
         kana: "わたしはがくせいです",
         stackCardId: undefined,
-        impressionType: 3,
+        impressionType: "GeneratedSentenceGuess",
       });
     });
 
@@ -137,7 +137,7 @@ describe("practice service", () => {
         kanji: "学校に行く",
         kana: "がっこうにいく",
         stackCardId: undefined,
-        impressionType: 4,
+        impressionType: "GeneratedSentenceWithParticlesSelect",
       });
     });
 
@@ -161,7 +161,7 @@ describe("practice service", () => {
         kanji: "学校で行く",
         kana: "がっこうでいく",
         stackCardId: undefined,
-        impressionType: 4,
+        impressionType: "GeneratedSentenceWithParticlesSelect",
       });
     });
   });
@@ -169,9 +169,9 @@ describe("practice service", () => {
   describe("filterProfanity", () => {
     it("should filter out words with profanity in sense", () => {
       const words: DisplayWord[] = [
-        { sense: "clean word", kanji: "綺麗", kana: "きれい", impressionType: 1 },
-        { sense: "fuck", kanji: "悪い", kana: "わるい", impressionType: 1 },
-        { sense: "another clean word", kanji: "良い", kana: "よい", impressionType: 1 },
+        { sense: "clean word", kanji: "綺麗", kana: "きれい", impressionType: "SenseGuess" },
+        { sense: "fuck", kanji: "悪い", kana: "わるい", impressionType: "SenseGuess" },
+        { sense: "another clean word", kanji: "良い", kana: "よい", impressionType: "SenseGuess" },
       ];
 
       const result = filterProfanity(words);
@@ -183,8 +183,8 @@ describe("practice service", () => {
 
     it("should filter out words with profanity in kanji", () => {
       const words: DisplayWord[] = [
-        { sense: "house", kanji: "家", kana: "いえ", impressionType: 1 },
-        { sense: "word", kanji: "shit", kana: "わーど", impressionType: 1 },
+        { sense: "house", kanji: "家", kana: "いえ", impressionType: "SenseGuess" },
+        { sense: "word", kanji: "shit", kana: "わーど", impressionType: "SenseGuess" },
       ];
 
       const result = filterProfanity(words);
@@ -195,8 +195,8 @@ describe("practice service", () => {
 
     it("should filter out words with profanity in kana", () => {
       const words: DisplayWord[] = [
-        { sense: "cat", kanji: "猫", kana: "ねこ", impressionType: 1 },
-        { sense: "word", kanji: "言葉", kana: "damn", impressionType: 1 },
+        { sense: "cat", kanji: "猫", kana: "ねこ", impressionType: "SenseGuess" },
+        { sense: "word", kanji: "言葉", kana: "damn", impressionType: "SenseGuess" },
       ];
 
       const result = filterProfanity(words);
@@ -207,10 +207,10 @@ describe("practice service", () => {
 
     it("should filter out multiple profane words", () => {
       const words: DisplayWord[] = [
-        { sense: "ass", kanji: "悪1", kana: "わる1", impressionType: 1 },
-        { sense: "dog", kanji: "犬", kana: "いぬ", impressionType: 1 },
-        { sense: "bitch", kanji: "悪2", kana: "わる2", impressionType: 1 },
-        { sense: "cat", kanji: "猫", kana: "ねこ", impressionType: 1 },
+        { sense: "ass", kanji: "悪1", kana: "わる1", impressionType: "SenseGuess" },
+        { sense: "dog", kanji: "犬", kana: "いぬ", impressionType: "SenseGuess" },
+        { sense: "bitch", kanji: "悪2", kana: "わる2", impressionType: "SenseGuess" },
+        { sense: "cat", kanji: "猫", kana: "ねこ", impressionType: "SenseGuess" },
       ];
 
       const result = filterProfanity(words);
@@ -222,9 +222,9 @@ describe("practice service", () => {
 
     it("should return all words when none contain profanity", () => {
       const words: DisplayWord[] = [
-        { sense: "dog", kanji: "犬", kana: "いぬ", impressionType: 1 },
-        { sense: "cat", kanji: "猫", kana: "ねこ", impressionType: 1 },
-        { sense: "bird", kanji: "鳥", kana: "とり", impressionType: 1 },
+        { sense: "dog", kanji: "犬", kana: "いぬ", impressionType: "SenseGuess" },
+        { sense: "cat", kanji: "猫", kana: "ねこ", impressionType: "SenseGuess" },
+        { sense: "bird", kanji: "鳥", kana: "とり", impressionType: "SenseGuess" },
       ];
 
       const result = filterProfanity(words);
@@ -235,8 +235,8 @@ describe("practice service", () => {
 
     it("should return empty array when all words contain profanity", () => {
       const words: DisplayWord[] = [
-        { sense: "fuck", kanji: "悪1", kana: "わる1", impressionType: 1 },
-        { sense: "shit", kanji: "悪2", kana: "わる2", impressionType: 1 },
+        { sense: "fuck", kanji: "悪1", kana: "わる1", impressionType: "SenseGuess" },
+        { sense: "shit", kanji: "悪2", kana: "わる2", impressionType: "SenseGuess" },
       ];
 
       const result = filterProfanity(words);
@@ -247,8 +247,8 @@ describe("practice service", () => {
 
     it("should handle words with undefined kanji and kana", () => {
       const words: DisplayWord[] = [
-        { sense: "hello", impressionType: 1 },
-        { sense: "goodbye", kana: "さよなら", impressionType: 1 },
+        { sense: "hello", impressionType: "SenseGuess" },
+        { sense: "goodbye", kana: "さよなら", impressionType: "SenseGuess" },
       ];
 
       const result = filterProfanity(words);
@@ -259,8 +259,8 @@ describe("practice service", () => {
 
     it("should filter profanity with mixed case", () => {
       const words: DisplayWord[] = [
-        { sense: "FUCK", kanji: "test", kana: "test", impressionType: 1 },
-        { sense: "normal word", kanji: "普通", kana: "ふつう", impressionType: 1 },
+        { sense: "FUCK", kanji: "test", kana: "test", impressionType: "SenseGuess" },
+        { sense: "normal word", kanji: "普通", kana: "ふつう", impressionType: "SenseGuess" },
       ];
 
       const result = filterProfanity(words);

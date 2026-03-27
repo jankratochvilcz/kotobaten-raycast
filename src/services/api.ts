@@ -133,6 +133,7 @@ export const getPracticeWords = async (count: number, token: string): Promise<Pr
 
     return undefined;
   } catch (error: unknown) {
+    console.error("getPracticeWords error:", error);
     await logoutIfNeeded(error);
     return undefined;
   }
@@ -140,16 +141,18 @@ export const getPracticeWords = async (count: number, token: string): Promise<Pr
 
 export const submitImpression = async (
   cardId: number | undefined,
-  impressionType: number,
+  impressionType: string,
   success: boolean,
   token: string,
 ): Promise<boolean> => {
   const url = new URL(PATH_IMPRESSIONS, PATH_ROOT);
 
+  const payload = { cardId: cardId ?? null, impressionType, success };
+
   try {
     const response = await axios.post(
       url.href,
-      { cardId: cardId ?? null, impressionType, success },
+      payload,
       createAuthenticationHeaders(token),
     );
     console.log(`submitImpression response: status=${response.status}`, JSON.stringify(response.data));

@@ -6,18 +6,7 @@ import { containsProfanityInFields } from "./profanity-filter";
 /**
  * Extract a DisplayWord from an Impression based on its type
  */
-// Maps string impression types to the API's integer enum
-const IMPRESSION_TYPE_MAP: Record<string, number> = {
-  SenseGuess: 1,
-  KanaGuess: 2,
-  GeneratedSentenceGuess: 3,
-  GeneratedSentenceWithParticlesSelect: 4,
-};
-
 export function extractDisplayWord(impression: Impression): DisplayWord | undefined {
-  const impressionType = IMPRESSION_TYPE_MAP[impression.type];
-  if (impressionType === undefined) return undefined;
-
   switch (impression.type) {
     case "SenseGuess":
     case "KanaGuess":
@@ -25,8 +14,8 @@ export function extractDisplayWord(impression: Impression): DisplayWord | undefi
         sense: impression.card.sense,
         kanji: impression.card.kanji || undefined,
         kana: impression.card.kana || undefined,
-        stackCardId: impression.stackCardId ?? undefined,
-        impressionType,
+        stackCardId: impression.card.id,
+        impressionType: impression.type,
       };
     case "GeneratedSentenceGuess":
       return {
@@ -34,7 +23,7 @@ export function extractDisplayWord(impression: Impression): DisplayWord | undefi
         kanji: impression.withKanji,
         kana: impression.kanaOnly,
         stackCardId: impression.stackCardId ?? undefined,
-        impressionType,
+        impressionType: impression.type,
       };
     case "GeneratedSentenceWithParticlesSelect":
       return {
@@ -42,7 +31,7 @@ export function extractDisplayWord(impression: Impression): DisplayWord | undefi
         kanji: impression.options[impression.correctOption]?.withKanji,
         kana: impression.options[impression.correctOption]?.kanaOnly,
         stackCardId: impression.stackCardId ?? undefined,
-        impressionType,
+        impressionType: impression.type,
       };
     default:
       return undefined;
@@ -87,5 +76,7 @@ export async function fetchAndProcessPracticeWords(
     return [];
   }
 
-  return processPracticeImpressions(response.impressions);
+  const words = processPracticeImpressions(response.impressions);
+  console.log("Processed practice words sample:", JSON.stringify(words.slice(0, 3)));
+  return words;
 }
